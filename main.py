@@ -36,12 +36,12 @@ def rangeQuery(dataBase, seedPoint, eps):
         if point.id != seedPoint.id:
             if distance_fun_euclides(point, seedPoint) <= eps:
                 neighbours.append(point)
-                print(f'Euklides punktu {point.id} i punktu {seedPoint.id} wynosi {distance_fun_euclides(point, seedPoint)}\n')
     return neighbours
+
 
 def read_database():
     pointsList = []
-    X = np.array([[1, 2], [2, 2], [2, 3], [8, 7], [8, 8], [25, 80]])
+    X = np.array([[1, 2], [2, 2], [8, 8], [25, 80], [2, 3], [8, 7]])
     id = 0
     for cooridantes in X:
         point = Point(cooridantes, id)
@@ -49,15 +49,54 @@ def read_database():
         id = id + 1
     return pointsList
 
+
 def distance_fun_euclides(point_1, point_2):
     distance = 0
-    for i in range (0, len(point_1.coordinates)):
-        distance = distance + math.pow(point_1.coordinates[i] - point_2.coordinates[i],2)
+    for i in range(0, len(point_1.coordinates)):
+        distance = distance + math.pow(point_1.coordinates[i] - point_2.coordinates[i], 2)
     return math.sqrt(distance)
+
+
+def find_ref_point(dataBase):
+    ref_point_coordinates = dataBase[0].coordinates
+    for i in range(1, len(dataBase)):
+        for j in range(0, len(dataBase[0].coordinates)):
+            if dataBase[i].coordinates[j] < ref_point_coordinates[j]:
+                ref_point_coordinates[j] = dataBase[i].coordinates[j]
+    ref_point = Point(ref_point_coordinates, -1)
+    return ref_point
+
+
+def sort_fun(point):
+    return point.ref_distance
+
+
+def distance_form_ref_point(dataBase):
+    ref_point = find_ref_point(dataBase)
+    for i in range(0, len(dataBase)):
+        dataBase[i].ref_distance = distance_fun_euclides(dataBase[i], ref_point)
+    data_base_sorted_ref_point = sorted(dataBase, key=sort_fun)
+    for i in ref_point.coordinates:
+        print(f'Ref point: {i}')
+    return data_base_sorted_ref_point
+
+
+def point_to_check(data_base_sort_with_ref_point, eps, point):
+    for index, item in enumerate(data_base_sort_with_ref_point):
+        if item.id == point.id:
+            break
+    else:
+        index = -1
+    print(f'Index: {index}')
+    return index
+
+
 
 def algorythm_tidbscan(minPts, eps):
     clusterId = 0
     dataBase = read_database()
+    data_base_sort_with_ref_point = distance_form_ref_point(dataBase)
+    point_to_check(data_base_sort_with_ref_point, eps, dataBase[3])
 
     for point in dataBase:
         if point.label != "UNDEFINED":
@@ -81,7 +120,7 @@ def algorythm_tidbscan(minPts, eps):
                     continue
                 if len(neighborsForSeedPoint) >= minPts:
                     dataBase[seedPoint.id].label = clusterId
-                    seed = seedSet+ neighborsForSeedPoint
+                    seed = seedSet + neighborsForSeedPoint
                     seedSet = seed
                     print("set")
                     for i in seedSet:
