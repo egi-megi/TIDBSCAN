@@ -30,15 +30,6 @@ def printResult(dataBase):
         print(f'Point {point.id} is in group {point.label}\n')
 
 
-def rangeQuery(dataBase, seedPoint, eps):
-    neighbours = []
-    for point in dataBase:
-        if point.id != seedPoint.id:
-            if distance_fun_euclides(point, seedPoint) <= eps:
-                neighbours.append(point)
-    return neighbours
-
-
 def read_database():
     pointsList = []
     X = np.array([[1, 2], [2, 2], [8, 8], [25, 80], [2, 3], [8, 7]])
@@ -71,7 +62,7 @@ def sort_fun(point):
     return point.ref_distance
 
 
-def distance_form_ref_point(dataBase):
+def distance_from_ref_point(dataBase):
     ref_point = find_ref_point(dataBase)
     for i in range(0, len(dataBase)):
         dataBase[i].ref_distance = distance_fun_euclides(dataBase[i], ref_point)
@@ -81,8 +72,8 @@ def distance_form_ref_point(dataBase):
     return data_base_sorted_ref_point
 
 
-def point_to_check(data_base_sort_with_ref_point, eps, point):
-    for index, item in enumerate(data_base_sort_with_ref_point):
+def point_to_check(sorted_data_base_with_ref_point, eps, point):
+    for index, item in enumerate(sorted_data_base_with_ref_point):
         if item.id == point.id:
             break
     else:
@@ -91,17 +82,48 @@ def point_to_check(data_base_sort_with_ref_point, eps, point):
     return index
 
 
+def find_border_for_checked_point(sorted_data_base_with_ref_point, eps, point_index):
+    earlier_distance = 0
+    later_distance = 0
+    earlier_iter = 1
+    later_iter = 1
+    earlier_index = 0
+    later_index = 0
+    while earlier_iter<point_index and earlier_distance <= eps:
+        earlier_distance = sorted_data_base_with_ref_point[point_index].ref_distance - sorted_data_base_with_ref_point[point_index - earlier_iter].ref_distance
+        if earlier_distance <= eps:
+            earlier_index = point_index - earlier_iter
+            earlier_iter = earlier_iter + 1
+    while point_index+later_iter<len(sorted_data_base_with_ref_point) and later_distance <= eps:
+        later_distance = sorted_data_base_with_ref_point[point_index + later_iter].ref_distance - sorted_data_base_with_ref_point[point_index].ref_distance
+        if later_distance <= eps:
+            later_index = point_index + later_iter
+            later_iter = later_iter + 1
+    return earlier_index, later_index
+
+
+def rangeQuery(dataBase, seedPoint, eps, sorted_data_base_with_ref_point):
+    neighbours = []
+    point_index_in_sorted_database = point_to_check(sorted_data_base_with_ref_point, eps, seedPoint)
+    border_of_indexes = find_border_for_checked_point(sorted_data_base_with_ref_point, eps, point_index_in_sorted_database)
+
+    for index in range(border_of_indexes[0], border_of_indexes[1]):
+        if sorted_data_base_with_ref_point[index].id != seedPoint.id:
+            if distance_fun_euclides(sorted_data_base_with_ref_point[index], seedPoint) <= eps:
+                neighbours.append(sorted_data_base_with_ref_point[index])
+    return neighbours
+
 
 def algorythm_tidbscan(minPts, eps):
     clusterId = 0
     dataBase = read_database()
-    data_base_sort_with_ref_point = distance_form_ref_point(dataBase)
+    data_base_sort_with_ref_point = distance_from_ref_point(dataBase)
     point_to_check(data_base_sort_with_ref_point, eps, dataBase[3])
 
     for point in dataBase:
         if point.label != "UNDEFINED":
             continue
-        neighbors = rangeQuery(dataBase, point, eps)
+        neighbors = rangeQuery(dataBase, point, eps, data_base_sort_with_ref_point)
         if len(neighbors) < minPts:
             point.label = "NOISE"
             continue
@@ -114,7 +136,7 @@ def algorythm_tidbscan(minPts, eps):
                 dataBase[seedPoint.id].label = clusterId
                 continue
             if dataBase[seedPoint.id].label == "UNDEFINED":
-                neighborsForSeedPoint = rangeQuery(dataBase, seedPoint, eps)
+                neighborsForSeedPoint = rangeQuery(dataBase, seedPoint, eps, data_base_sort_with_ref_point)
                 if len(neighborsForSeedPoint) < minPts:
                     dataBase[seedPoint.id].label = clusterId
                     continue
