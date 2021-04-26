@@ -17,7 +17,7 @@ class Point:
         self.id = id
         self.label = "UNDEFINED"
 
-X = np.array([[1, 2], [2, 2], [2, 3], [8, 7], [8, 8], [25, 80]])
+X = np.array([[1, 2], [2, 2], [8, 8], [25, 80], [2, 3], [8, 7]])
 clustering = DBSCAN(eps=3, min_samples=2).fit(X)
 print(clustering.labels_)
 
@@ -67,8 +67,8 @@ def distance_from_ref_point(dataBase):
     for i in range(0, len(dataBase)):
         dataBase[i].ref_distance = distance_fun_euclides(dataBase[i], ref_point)
     data_base_sorted_ref_point = sorted(dataBase, key=sort_fun)
-    for i in ref_point.coordinates:
-        print(f'Ref point: {i}')
+    for i in range(0, len(ref_point.coordinates)):
+        print(f'Ref point coorinate {i}: {ref_point.coordinates[i]}')
     return data_base_sorted_ref_point
 
 
@@ -85,21 +85,17 @@ def point_to_check(sorted_data_base_with_ref_point, eps, point):
 def find_border_for_checked_point(sorted_data_base_with_ref_point, eps, point_index):
     earlier_distance = 0
     later_distance = 0
-    earlier_iter = 1
-    later_iter = 1
-    earlier_index = 0
-    later_index = 0
-    while earlier_iter<point_index and earlier_distance <= eps:
-        earlier_distance = sorted_data_base_with_ref_point[point_index].ref_distance - sorted_data_base_with_ref_point[point_index - earlier_iter].ref_distance
+    earlier_index = point_index - 1
+    later_index = point_index + 1
+    while earlier_index >= 0 and earlier_distance <= eps:
+        earlier_distance = sorted_data_base_with_ref_point[point_index].ref_distance - sorted_data_base_with_ref_point[earlier_index].ref_distance
         if earlier_distance <= eps:
-            earlier_index = point_index - earlier_iter
-            earlier_iter = earlier_iter + 1
-    while point_index+later_iter<len(sorted_data_base_with_ref_point) and later_distance <= eps:
-        later_distance = sorted_data_base_with_ref_point[point_index + later_iter].ref_distance - sorted_data_base_with_ref_point[point_index].ref_distance
+            earlier_index = earlier_index - 1
+    while later_index < len(sorted_data_base_with_ref_point) and later_distance <= eps:
+        later_distance = sorted_data_base_with_ref_point[later_index].ref_distance - sorted_data_base_with_ref_point[point_index].ref_distance
         if later_distance <= eps:
-            later_index = point_index + later_iter
-            later_iter = later_iter + 1
-    return earlier_index, later_index
+            later_index = later_index + 1
+    return earlier_index + 1, later_index - 1
 
 
 def rangeQuery(dataBase, seedPoint, eps, sorted_data_base_with_ref_point):
@@ -107,10 +103,10 @@ def rangeQuery(dataBase, seedPoint, eps, sorted_data_base_with_ref_point):
     point_index_in_sorted_database = point_to_check(sorted_data_base_with_ref_point, eps, seedPoint)
     border_of_indexes = find_border_for_checked_point(sorted_data_base_with_ref_point, eps, point_index_in_sorted_database)
 
-    for index in range(border_of_indexes[0], border_of_indexes[1]):
-        if sorted_data_base_with_ref_point[index].id != seedPoint.id:
-            if distance_fun_euclides(sorted_data_base_with_ref_point[index], seedPoint) <= eps:
-                neighbours.append(sorted_data_base_with_ref_point[index])
+    for index in range(0, len(border_of_indexes)):
+        if sorted_data_base_with_ref_point[border_of_indexes[index]].id != seedPoint.id:
+            if distance_fun_euclides(sorted_data_base_with_ref_point[border_of_indexes[index]], seedPoint) <= eps:
+                neighbours.append(sorted_data_base_with_ref_point[border_of_indexes[index]])
     return neighbours
 
 
