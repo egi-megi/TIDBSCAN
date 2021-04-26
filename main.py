@@ -8,14 +8,23 @@ import math
 
 
 
+
 class Point:
 
-    coordinates = {}
+    coordinates = []
 
     def __init__(self, c, id):
         self.coordinates = c
         self.id = id
         self.label = "UNDEFINED"
+
+
+class Data:
+    pointsList = []
+
+    def __init__(self, b):
+        self.pointsList = b
+
 
 X = np.array([[1, 2], [2, 2], [8, 8], [25, 80], [2, 3], [8, 7]])
 clustering = DBSCAN(eps=3, min_samples=2).fit(X)
@@ -30,11 +39,10 @@ def printResult(dataBase):
         print(f'Point {point.id} is in group {point.label}\n')
 
 
-def read_database():
+def read_database(data):
     pointsList = []
-    X = np.array([[1, 2], [2, 2], [8, 8], [25, 80], [2, 3], [8, 7]])
     id = 0
-    for cooridantes in X:
+    for cooridantes in data:
         point = Point(cooridantes, id)
         pointsList.append(point)
         id = id + 1
@@ -110,10 +118,12 @@ def rangeQuery(dataBase, seedPoint, eps, sorted_data_base_with_ref_point):
     return neighbours
 
 
-def algorythm_tidbscan(minPts, eps):
+def algorythm_tidbscan(minPts, eps, data):
     clusterId = 0
-    dataBase = read_database()
+    dataBase = read_database(data)
     data_base_sort_with_ref_point = distance_from_ref_point(dataBase)
+    print(f'data_base_sort_with_ref_point[0]: , {data_base_sort_with_ref_point[0].id}')
+    print(f'data_base[0]: , {dataBase[0].id}')
     point_to_check(data_base_sort_with_ref_point, eps, dataBase[3])
 
     for point in dataBase:
@@ -149,10 +159,15 @@ def algorythm_tidbscan(minPts, eps):
         clusterId += 1
     printResult(dataBase)
 
+
 def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
-    algorythm_tidbscan(1, 1)
+
+    dataArray = np.array([[1, 2], [2, 2], [8, 8], [25, 80], [2, 3], [8, 7]])
+    data = Data(dataArray)
+    algorythm_tidbscan(1, 1, data.pointsList)
+
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
