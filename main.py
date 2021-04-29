@@ -26,7 +26,8 @@ class Data:
         self.pointsList = b
 
 
-X = np.array([[0,0,0], [18,18,21], [4,11,9], [22,0,25], [23,1,29], [24,2,26], [5,8,10], [20,19,18], [10,15,15], [3,13,11], [19,20,19], [21, 19, 20]])
+X = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25], [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
+             [20, 19, 18], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
 clustering = DBSCAN(eps=4, min_samples=3).fit(X)
 print(clustering.labels_)
 
@@ -157,6 +158,7 @@ def algorythm_tidbscan(minPts, eps, data):
                 continue
         clusterId += 1
     printResult(dataBase)
+    return dataBase
 
 
 def print_hi(name):

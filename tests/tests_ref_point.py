@@ -17,7 +17,7 @@ class RefPointTestCase(unittest.TestCase):
             [[30, 30, 30], [18, 18, 21], [4, 11, 9], [22, 0, 25], [23, 1, 29], [24, 2, 26], [5, 8, 10], [20, 19, 18],
              [10, 15, 15], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
         self.data2 = read_database(self.dataArray2)
-        self.minPts = 2
+        self.minPts = 3
         self.eps = 4
 
     def test_ref_point_distance_euclides(self):
