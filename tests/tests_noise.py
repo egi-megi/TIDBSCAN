@@ -13,9 +13,9 @@ class NoiseTestCase(unittest.TestCase):
         self.minPts = 1
         self.eps = 1
 
-    def test_compute_reference_point(self):
-        self.dataBase = read_database(self.dataArray)
-        self.sorted_database = distance_from_ref_point(self.dataBase)
-        #self.assertIsNotNone(self.sorted_database[0])
-        self.point = Point([1, 2], 0)
-        self.assertEqual(self.sorted_database[0], self.dataBase[0])
+    #def test_compute_reference_point(self):
+    #    self.dataBase = read_database(self.dataArray)
+    #    self.sorted_database = distance_from_ref_point(self.dataBase)
+    #    #self.assertIsNotNone(self.sorted_database[0])
+    #    self.point = Point([1, 2], 0)
+    #    self.assertEqual(self.sorted_database[0], self.dataBase[0])

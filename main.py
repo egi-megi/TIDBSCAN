@@ -26,8 +26,8 @@ class Data:
         self.pointsList = b
 
 
-X = np.array([[1, 2], [2, 2], [8, 8], [25, 80], [2, 3], [8, 7]])
-clustering = DBSCAN(eps=3, min_samples=2).fit(X)
+X = np.array([[0,0,0], [18,18,21], [4,11,9], [22,0,25], [23,1,29], [24,2,26], [5,8,10], [20,19,18], [10,15,15], [3,13,11], [19,20,19], [21, 19, 20]])
+clustering = DBSCAN(eps=4, min_samples=3).fit(X)
 print(clustering.labels_)
 
 print(clustering)
@@ -62,7 +62,7 @@ def find_ref_point(dataBase):
         for j in range(0, len(dataBase[0].coordinates)):
             if dataBase[i].coordinates[j] < ref_point_coordinates[j]:
                 ref_point_coordinates[j] = dataBase[i].coordinates[j]
-    ref_point = Point(ref_point_coordinates, -1)
+    ref_point = Point(ref_point_coordinates, -100)
     return ref_point
 
 
@@ -80,7 +80,7 @@ def distance_from_ref_point(dataBase):
     return data_base_sorted_ref_point
 
 
-def point_to_check(sorted_data_base_with_ref_point, eps, point):
+def point_to_check(sorted_data_base_with_ref_point, point):
     for index, item in enumerate(sorted_data_base_with_ref_point):
         if item.id == point.id:
             break
@@ -106,15 +106,15 @@ def find_border_for_checked_point(sorted_data_base_with_ref_point, eps, point_in
     return earlier_index + 1, later_index - 1
 
 
-def rangeQuery(dataBase, seedPoint, eps, sorted_data_base_with_ref_point):
+def rangeQuery(seedPoint, eps, sorted_data_base_with_ref_point):
     neighbours = []
-    point_index_in_sorted_database = point_to_check(sorted_data_base_with_ref_point, eps, seedPoint)
+    point_index_in_sorted_database = point_to_check(sorted_data_base_with_ref_point, seedPoint)
     border_of_indexes = find_border_for_checked_point(sorted_data_base_with_ref_point, eps, point_index_in_sorted_database)
 
-    for index in range(0, len(border_of_indexes)):
-        if sorted_data_base_with_ref_point[border_of_indexes[index]].id != seedPoint.id:
-            if distance_fun_euclides(sorted_data_base_with_ref_point[border_of_indexes[index]], seedPoint) <= eps:
-                neighbours.append(sorted_data_base_with_ref_point[border_of_indexes[index]])
+    for index in range(border_of_indexes[0], border_of_indexes[1] + 1):
+        if sorted_data_base_with_ref_point[index].id != seedPoint.id:
+            if distance_fun_euclides(sorted_data_base_with_ref_point[index], seedPoint) <= eps:
+                neighbours.append(sorted_data_base_with_ref_point[index])
     return neighbours
 
 
@@ -124,29 +124,28 @@ def algorythm_tidbscan(minPts, eps, data):
     data_base_sort_with_ref_point = distance_from_ref_point(dataBase)
     print(f'data_base_sort_with_ref_point[0]: , {data_base_sort_with_ref_point[0].id}')
     print(f'data_base[0]: , {dataBase[0].id}')
-    point_to_check(data_base_sort_with_ref_point, eps, dataBase[3])
 
     for point in dataBase:
         if point.label != "UNDEFINED":
             continue
-        neighbors = rangeQuery(dataBase, point, eps, data_base_sort_with_ref_point)
-        if len(neighbors) < minPts:
-            point.label = "NOISE"
+        neighbors = rangeQuery(point, eps, data_base_sort_with_ref_point)
+        if len(neighbors) < minPts - 1:
+            point.label = -1
             continue
-        if len(neighbors) >= minPts:
+        if len(neighbors) >= minPts - 1:
             point.label = clusterId
             seedSet = neighbors
         while seedSet:
             seedPoint=seedSet.pop()
-            if dataBase[seedPoint.id].label == "NOISE":
+            if dataBase[seedPoint.id].label == -1:
                 dataBase[seedPoint.id].label = clusterId
                 continue
             if dataBase[seedPoint.id].label == "UNDEFINED":
-                neighborsForSeedPoint = rangeQuery(dataBase, seedPoint, eps, data_base_sort_with_ref_point)
-                if len(neighborsForSeedPoint) < minPts:
+                neighborsForSeedPoint = rangeQuery(seedPoint, eps, data_base_sort_with_ref_point)
+                if len(neighborsForSeedPoint) < minPts - 1:
                     dataBase[seedPoint.id].label = clusterId
                     continue
-                if len(neighborsForSeedPoint) >= minPts:
+                if len(neighborsForSeedPoint) >= minPts - 1:
                     dataBase[seedPoint.id].label = clusterId
                     seed = seedSet + neighborsForSeedPoint
                     seedSet = seed
@@ -164,9 +163,9 @@ def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
 
-    dataArray = np.array([[1, 2], [2, 2], [8, 8], [25, 80], [2, 3], [8, 7]])
+    dataArray = np.array([[0,0,0], [18,18,21], [4,11,9], [22,0,25], [23,1,29], [24,2,26], [5,8,10], [20,19,18], [10,15,15], [3,13,11], [19,20,19], [21, 19, 20]])
     data = Data(dataArray)
-    algorythm_tidbscan(1, 1, data.pointsList)
+    algorythm_tidbscan(2, 4, data.pointsList)
 
 
 # Press the green button in the gutter to run the script.
