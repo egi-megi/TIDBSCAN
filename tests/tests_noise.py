@@ -3,7 +3,7 @@ import numpy as np
 
 import responses
 import requests
-from main import Data, Point, read_database, find_ref_point, distance_from_ref_point, algorythm_tidbscan
+from main import read_database, distance_from_ref_point, algorythm_tidbscan
 
 
 class NoiseTestCase(unittest.TestCase):
@@ -43,4 +43,4 @@ class NoiseTestCase(unittest.TestCase):
         self.labels = []
         for point in self.data_with_labels:
             self.labels.append(point.label)
-        #self.assertTrue((self.labels == [0, 1, -1, 2, 2, 2, -1, 1, 0, 1, 0, 0]))
+        self.assertTrue((self.labels == [0, 1, -1, 2, 2, 2, -1, 1, 0, 1, 0, 0]))

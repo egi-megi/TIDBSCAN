@@ -1,9 +1,7 @@
 import unittest
 import numpy as np
 
-import responses
-import requests
-from main import Data, Point, read_database, find_ref_point, distance_from_ref_point, algorythm_tidbscan
+from main import read_database, distance_from_ref_point, algorythm_tidbscan
 
 
 class GroupsTestCase(unittest.TestCase):

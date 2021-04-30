@@ -7,32 +7,19 @@ import numpy as np
 import math
 
 
-
-
 class Point:
-
-    coordinates = []
-
     def __init__(self, c, id):
         self.coordinates = c
         self.id = id
         self.label = "UNDEFINED"
 
 
-class Data:
-    pointsList = []
-
-    def __init__(self, b):
-        self.pointsList = b
-
-
 X = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25], [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
-             [20, 19, 18], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
+              [20, 19, 18], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
 clustering = DBSCAN(eps=4, min_samples=3).fit(X)
 print(clustering.labels_)
 
 print(clustering)
-
 
 
 def printResult(dataBase):
@@ -58,7 +45,7 @@ def distance_fun_euclides(point_1, point_2):
 
 
 def find_ref_point(dataBase):
-    ref_point_coordinates = dataBase[0].coordinates
+    ref_point_coordinates = dataBase[0].coordinates.copy()
     for i in range(1, len(dataBase)):
         for j in range(0, len(dataBase[0].coordinates)):
             if dataBase[i].coordinates[j] < ref_point_coordinates[j]:
@@ -97,11 +84,13 @@ def find_border_for_checked_point(sorted_data_base_with_ref_point, eps, point_in
     earlier_index = point_index - 1
     later_index = point_index + 1
     while earlier_index >= 0 and earlier_distance <= eps:
-        earlier_distance = sorted_data_base_with_ref_point[point_index].ref_distance - sorted_data_base_with_ref_point[earlier_index].ref_distance
+        earlier_distance = sorted_data_base_with_ref_point[point_index].ref_distance - sorted_data_base_with_ref_point[
+            earlier_index].ref_distance
         if earlier_distance <= eps:
             earlier_index = earlier_index - 1
     while later_index < len(sorted_data_base_with_ref_point) and later_distance <= eps:
-        later_distance = sorted_data_base_with_ref_point[later_index].ref_distance - sorted_data_base_with_ref_point[point_index].ref_distance
+        later_distance = sorted_data_base_with_ref_point[later_index].ref_distance - sorted_data_base_with_ref_point[
+            point_index].ref_distance
         if later_distance <= eps:
             later_index = later_index + 1
     return earlier_index + 1, later_index - 1
@@ -110,7 +99,8 @@ def find_border_for_checked_point(sorted_data_base_with_ref_point, eps, point_in
 def rangeQuery(seedPoint, eps, sorted_data_base_with_ref_point):
     neighbours = []
     point_index_in_sorted_database = point_to_check(sorted_data_base_with_ref_point, seedPoint)
-    border_of_indexes = find_border_for_checked_point(sorted_data_base_with_ref_point, eps, point_index_in_sorted_database)
+    border_of_indexes = find_border_for_checked_point(sorted_data_base_with_ref_point, eps,
+                                                      point_index_in_sorted_database)
 
     for index in range(border_of_indexes[0], border_of_indexes[1] + 1):
         if sorted_data_base_with_ref_point[index].id != seedPoint.id:
@@ -137,7 +127,7 @@ def algorythm_tidbscan(minPts, eps, data):
             point.label = clusterId
             seedSet = neighbors
         while seedSet:
-            seedPoint=seedSet.pop()
+            seedPoint = seedSet.pop()
             if dataBase[seedPoint.id].label == -1:
                 dataBase[seedPoint.id].label = clusterId
                 continue
@@ -165,9 +155,10 @@ def print_hi(name):
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
 
-    dataArray = np.array([[0,0,0], [18,18,21], [4,11,9], [22,0,25], [23,1,29], [24,2,26], [5,8,10], [20,19,18], [10,15,15], [3,13,11], [19,20,19], [21, 19, 20]])
-    data = Data(dataArray)
-    algorythm_tidbscan(2, 4, data.pointsList)
+    dataArray = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25],
+                          [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
+                          [20, 19, 18], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
+    algorythm_tidbscan(3, 4, dataArray)
 
 
 # Press the green button in the gutter to run the script.
