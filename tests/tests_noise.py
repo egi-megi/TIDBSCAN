@@ -3,7 +3,7 @@ import numpy as np
 
 import responses
 import requests
-from main import read_database, distance_from_ref_point, algorythm_tidbscan
+from algorythm_tidbscan import read_database, distance_from_ref_point, algorythm_tidbscan
 
 
 class NoiseTestCase(unittest.TestCase):

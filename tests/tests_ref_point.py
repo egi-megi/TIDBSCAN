@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 
-from main import Point, read_database, find_ref_point, distance_from_ref_point, distance_fun_euclides, \
+from algorythm_tidbscan import Point, read_database, find_ref_point, distance_from_ref_point, distance_fun_euclides, \
     point_to_check, find_border_for_checked_point, rangeQuery
 
 
