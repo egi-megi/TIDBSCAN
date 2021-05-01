@@ -12,23 +12,34 @@ DATA = ['BarackObama.csv', 'BillGates.csv', 'BorisJohnson.csv', 'elonmusk.csv', 
         'KamalaHarris.csv', 'PolandMFA.csv', 'Pontifex.csv', 'POTUS.csv', 'RobertDowneyJr.csv', 'RoyalFamily.csv']
 
 
-def read_tweets(filepath):
+def read_n_tweets(filepath, n=-1):
     data = pd.read_csv(filepath)
     tweets_list = data['tablescraper-selected-row'].to_list()
 
     vector = []
-    for tweet in tweets_list:
+    for tweet in tweets_list[0:n]:
         if pd.isnull(tweet):
             continue
         vector.append(tweet)
     return vector
 
 
+def read_n_tweets_from_data(path=DATA, number=-1):
+    master_vector = []
+    class_vector = []
+    for d in path:
+        vector = read_n_tweets('data/' + d, number)
+        master_vector.extend(vector)
+        class_vector.extend([d for i in vector])
+
+    return master_vector, class_vector
+
+
 def read_all_tweets(path=DATA):
     master_vector = []
     class_vector = []
     for d in path:
-        vector = read_tweets('data/' + d)
+        vector = read_n_tweets('data/' + d)
         master_vector.extend(vector)
         class_vector.extend([d for i in vector])
 
@@ -92,26 +103,14 @@ def save_data(data, filename):
     with open(filename, 'wb') as file:
         pickle.dump(data, file)
 
+
+def get_results_for_multiple_eps(vector, eps_start, eps_end, n, min_pts=2):
+    delta = (eps_end-eps_start) / n
+    results = []
+    for i in range(n):
+        r = tidb.algorythm_tidbscan(min_pts, eps_start + n * delta, vector)
+        results.append(r)
+
+    return results
 if __name__ == '__main__':
-    # Uncomment steps you want to follow:
-
-    # Step 1)
-    # Get vectors from text:
-    # tweets = read_tweets('data/borisjohnson.csv')
-    # tweet_vector = get_vectors(tweets)
-
-    # Step 2)
-    # Find out epsilon by looking at distribution of max, min, median euclidean distances between all points.
-    # distances = create_and_save_distances_list(vector, save=True) # Compute distances
-    distances = read_distances_list() # Read previously computed distances
-    minimum, median, maximum = get_basic_statistics(distances)
-    plot_basic_statistics(minimum, median, maximum)
-
-    # Step 3)
-    # Now after analyzing distribution of distances between points
-    # do clustering n times for epsilon_start and delta_epsilon parameters
-    n = 1
-    epsilon_start = 0.4
-    delta_epsilon = 0.05
-    # clustering = sklearn.cluster.dbscan(X=tweet_vector, eps=1.1, min_samples=2)
-    # print(clustering)
+    pass
