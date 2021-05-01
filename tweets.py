@@ -4,14 +4,17 @@ import sklearn
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
+import algorythm_tidbscan as tidb
 
 # Follow readme and update location of TENSORFLOW MODEL:
 TENSORFLOW_MODEL = 'model/'
+DATA = ['BarackObama.csv', 'BillGates.csv', 'BorisJohnson.csv', 'elonmusk.csv', 'jk_rowling.csv',
+        'KamalaHarris.csv', 'PolandMFA.csv', 'Pontifex.csv', 'POTUS.csv', 'RobertDowneyJr.csv', 'RoyalFamily.csv']
 
 
 def read_tweets(filepath):
     data = pd.read_csv(filepath)
-    tweets_list = data['tweet'].to_list()
+    tweets_list = data['tablescraper-selected-row'].to_list()
 
     vector = []
     for tweet in tweets_list:
@@ -19,6 +22,17 @@ def read_tweets(filepath):
             continue
         vector.append(tweet)
     return vector
+
+
+def read_all_tweets(path=DATA):
+    master_vector = []
+    class_vector = []
+    for d in path:
+        vector = read_tweets('data/' + d)
+        master_vector.extend(vector)
+        class_vector.extend([d for i in vector])
+
+    return master_vector, class_vector
 
 
 def get_vectors(tweets_list):
@@ -37,14 +51,14 @@ def create_and_save_distances_list(vector, save=False):
         distance_list.append(dis)
 
     if save:
-        with open('data/distances_list', 'wb') as file:
+        with open('dump/distances_list', 'wb') as file:
             pickle.dump(distance_list, file)
 
     return distance_list
 
 
 def read_distances_list():
-    with open('data/distances_list', 'rb') as f:
+    with open('dump/distances_list', 'rb') as f:
         my_list = pickle.load(f)
 
     return my_list
@@ -73,6 +87,10 @@ def plot_basic_statistics(mini, medi, maxi):
     ax.plot()
     plt.show()
 
+
+def save_data(data, filename):
+    with open(filename, 'wb') as file:
+        pickle.dump(data, file)
 
 if __name__ == '__main__':
     # Uncomment steps you want to follow:
