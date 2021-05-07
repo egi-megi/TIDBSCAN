@@ -162,10 +162,24 @@ def get_df_for_results(results, class_vector, epsilon_start, epsilon_end, n):
     return df
 
 
-def get_purity_for_n_results(class_vector, results, number):
+def get_purity_for_n_results_dbscan(class_vector, results, number):
     scores = []
     for i in range(number):
         scores.append(purity_score(class_vector, results[i]))
+
+    return scores
+
+
+def get_purity_for_n_results_tidbscan(class_vector, results, number):
+    scores = []
+    flat = []
+    for i in range(number):
+        flat.append([])
+        for point in results[i]:
+            flat[i].append(point.label)
+
+    for i in range(number):
+        scores.append(purity_score(class_vector, flat[i]))
 
     return scores
 
