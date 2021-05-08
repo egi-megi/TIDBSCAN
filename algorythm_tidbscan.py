@@ -14,12 +14,12 @@ class Point:
         self.label = "UNDEFINED"
 
 
-X = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25], [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
-              [20, 19, 18], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
-clustering = DBSCAN(eps=4, min_samples=3).fit(X)
-print(clustering.labels_)
-
-print(clustering)
+# X = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25], [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
+#               [20, 19, 18], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
+# clustering = DBSCAN(eps=4, min_samples=3).fit(X)
+# print(clustering.labels_)
+#
+# print(clustering)
 
 
 def printResult(dataBase):
@@ -63,8 +63,8 @@ def distance_from_ref_point(dataBase):
     for i in range(0, len(dataBase)):
         dataBase[i].ref_distance = distance_fun_euclides(dataBase[i], ref_point)
     data_base_sorted_ref_point = sorted(dataBase, key=sort_fun)
-    for i in range(0, len(ref_point.coordinates)):
-        print(f'Ref point coorinate {i}: {ref_point.coordinates[i]}')
+    # for i in range(0, len(ref_point.coordinates)):
+    #     print(f'Ref point coorinate {i}: {ref_point.coordinates[i]}')
     return data_base_sorted_ref_point
 
 
@@ -74,7 +74,7 @@ def point_to_check(sorted_data_base_with_ref_point, point):
             break
     else:
         index = -1
-    print(f'Index: {index}')
+    # print(f'Index: {index}')
     return index
 
 
@@ -113,8 +113,8 @@ def algorythm_tidbscan(minPts, eps, data):
     clusterId = 0
     dataBase = read_database(data)
     data_base_sort_with_ref_point = distance_from_ref_point(dataBase)
-    print(f'data_base_sort_with_ref_point[0]: , {data_base_sort_with_ref_point[0].id}')
-    print(f'data_base[0]: , {dataBase[0].id}')
+    # print(f'data_base_sort_with_ref_point[0]: , {data_base_sort_with_ref_point[0].id}')
+    # print(f'data_base[0]: , {dataBase[0].id}')
 
     for point in dataBase:
         if point.label != "UNDEFINED":
@@ -140,14 +140,14 @@ def algorythm_tidbscan(minPts, eps, data):
                     dataBase[seedPoint.id].label = clusterId
                     seed = seedSet + neighborsForSeedPoint
                     seedSet = seed
-                    print("set")
-                    for i in seedSet:
-                        print(f'Seed: {i.id}')
-                    print("end set")
+                    # print("set")
+                    # for i in seedSet:
+                        # print(f'Seed: {i.id}')
+                    # print("end set")
                     continue
                 continue
         clusterId += 1
-    printResult(dataBase)
+    # printResult(dataBase)
     return dataBase
 
 
@@ -164,5 +164,6 @@ def print_hi(name):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print_hi('PyCharm')
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
