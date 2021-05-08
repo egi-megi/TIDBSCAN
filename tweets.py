@@ -96,8 +96,16 @@ def plot_basic_statistics(mini, medi, maxi):
     df['max'] = maxi
     df['median'] = medi
     ax = df.plot.hist(bins=60, alpha=0.5)
+    plt.xlabel("Etykieta")
+    plt.ylabel("Liczba punktów")
     ax.plot()
     plt.show()
+    s = {
+        "min": min(mini),
+        "max": max(maxi),
+        "med": np.median(medi)
+    }
+    print("Minimum zbioru min={:.2f}, Max zbioru max={:.2f}, Mediana zbioru median={:.2f}".format(s['min'], s['max'], s['med']))
 
 
 def save_data(data, filename):
@@ -196,6 +204,53 @@ def get_epsilon_array(eps_start, eps_end, number):
     c = (eps_end - eps_start) / number
     return [eps_start + i * c for i in range(number)]
 
+
+def read_computed_data(dataset):
+    with open('dump/' + dataset, 'rb') as f:
+        data = pickle.load(f)
+    f.close()
+    return data
+
+
+def get_all_groups_in_result(results, result_nr, tweets, tidbscan=False):
+    # TODO: implementation for tidbscan
+    group_id = []
+    number_of_points = []
+    indexes_of_points = []
+    list_of_tweets = []
+
+    points =[]
+
+    for i, result in enumerate(results[result_nr]):
+        points.append(result.label)
+
+        if group_id.count(result.label) == 0:
+            number_of_points.append(0)
+            group_id.append(result.label)
+            indexes_of_points.append([i])
+            list_of_tweets.append([tweets[i]])
+            index = group_id.index(result.label)
+            number_of_points[index] = number_of_points[index] + 1
+        else:
+            index = group_id.index(result.label)
+            indexes_of_points[index].append(i)
+            list_of_tweets[index].append(tweets[i])
+            number_of_points[index] = number_of_points[index] + 1
+
+    # columns = ['group_id', 'number_of_points', 'indexes_of_points', 'list_of_tweets']
+    # df = pd.DataFrame([group_id,number_of_points,indexes_of_points,list_of_tweets],columns=columns)
+
+    stats = {"min_sent_length": [], "max_sent_length": [], "med_sent_length": []}
+
+    for tw in list_of_tweets:
+        length = []
+        for t in tw:
+            length.append(len(t))
+        stats["min_sent_length"].append(min(length))
+        stats["max_sent_length"].append(max(length))
+        stats["med_sent_length"].append(np.median(length))
+
+    return [group_id, number_of_points, indexes_of_points, list_of_tweets, stats, points]
 
 if __name__ == '__main__':
     pass
