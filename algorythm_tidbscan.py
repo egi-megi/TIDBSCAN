@@ -147,13 +147,13 @@ def algorythm_tidbscan(minPts, eps, data):
                     continue
                 continue
         clusterId += 1
-    # printResult(dataBase)
+    printResult(dataBase)
     return dataBase
 
 
 def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+
+    print(f'Hi, {name}')
 
     dataArray = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25],
                           [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
@@ -161,9 +161,7 @@ def print_hi(name):
     algorythm_tidbscan(3, 4, dataArray)
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print_hi('PyCharm')
 
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
