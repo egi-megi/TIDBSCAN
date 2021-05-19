@@ -2,7 +2,7 @@ import numpy as np
 import math
 import copy
 
-from algorythm_tidbscan import Point, read_database, distance_fun_euclides, find_ref_point, sort_fun, distance_from_ref_point, \
+from algorythm_tidbscan import Point, algorythm_tidbscan, read_database, distance_fun_euclides, find_ref_point, sort_fun, distance_from_ref_point, \
     point_to_check, find_border_for_checked_point, rangeQuery
 
 
@@ -80,6 +80,32 @@ def put_point_into_cell(data):
                 point.cell_number = cell.id
                 cell.points.append(point)
                 cell.number_of_points = cell.number_of_points + 1
+    return cells_list
+
+
+def find_max_number_of_points(cells_list):
+    max_points = 0
+    list_of_cells_with_max_number_of_cells = []
+    for cell in cells_list:
+        if cell.number_of_points > max_points:
+            max_points = cell.number_of_points
+    for cell in cells_list:
+        if cell.number_of_points == max_points:
+            list_of_cells_with_max_number_of_cells.append(cell)
+    return list_of_cells_with_max_number_of_cells, max_points
+
+
+def grid_clustering(data, minPts, eps):
+    cells_list = put_point_into_cell(data)
+    list_of_cells_with_max_number_of_cells, max_points = find_max_number_of_points(cells_list)
+    divider = 5
+    threshold = max_points/divider
+    result = []
+    for cell in list_of_cells_with_max_number_of_cells:
+        algorythm_tidbscan(minPts, eps, cell.points)
+    for i in range(1, divider + 1):
+        eps = eps + 0.1 * eps
+
 
 
 def algorythm_swdbscan(minPts, eps, data):
