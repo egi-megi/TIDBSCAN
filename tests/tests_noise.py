@@ -22,25 +22,26 @@ class NoiseTestCase(unittest.TestCase):
         self.data3 = read_database(self.dataArray3)
         self.minPts = 3
         self.eps = 4
+        self.label_number = 1
 
     def test_noise_points_outside_1(self):
-        self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray1)
+        self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label)
+            self.labels.append(point.label[1])
         self.assertTrue((self.labels == [-1, 0, 1, 2, 2, 2, 1, 0, 1, 0, 0, -1]))
 
     def test_noise_points_outside_2(self):
-        self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray2)
+        self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray2, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label)
+            self.labels.append(point.label[1])
         self.assertTrue((self.labels == [-1, 0, 1, 2, 2, 2, 1, 0, 1, 0, 0, -1]))
 
 
     def test_noise_points_inside(self):
-        self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray3)
+        self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray3, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label)
+            self.labels.append(point.label[1])
         self.assertTrue((self.labels == [0, 1, -1, 2, 2, 2, -1, 1, 0, 1, 0, 0]))

@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from algorythm_tidbscan import read_database, distance_from_ref_point, algorythm_tidbscan
-
+from algorythm_swdbscan import algorythm_swdbscan
 
 class GroupsTestCase(unittest.TestCase):
     def setUp(self):
@@ -15,31 +15,32 @@ class GroupsTestCase(unittest.TestCase):
         self.minPts2 = 2
         self.minPts5 = 5
         self.eps = 4
+        self.label_number = 1
 
     def test_groups_0(self):
-        self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray1)
+        self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label)
+            self.labels.append(point.label[1])
         self.assertTrue((self.labels == [-1, 0, 1, 2, 2, 2, 1, 0, 1, 0, 0, -1]))
 
     def test_groups_minPts_4(self):
-        self.data_with_labels = algorythm_tidbscan(self.minPts4, self.eps, self.dataArray1)
+        self.data_with_labels = algorythm_tidbscan(self.minPts4, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label)
+            self.labels.append(point.label[1])
         self.assertTrue((self.labels == [-1, 0, -1, -1, -1, -1, -1, 0, -1, 0, 0, -1]))
 
     def test_groups_minPts_2(self):
-        self.data_with_labels = algorythm_tidbscan(self.minPts2, self.eps, self.dataArray1)
+        self.data_with_labels = algorythm_tidbscan(self.minPts2, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label)
+            self.labels.append(point.label[1])
         self.assertTrue((self.labels == [-1, 0, 1, 2, 2, 2, 1, 0, 1, 0, 0, -1]))
 
     def test_groups_noise(self):
-        self.data_with_labels = algorythm_tidbscan(self.minPts5, self.eps, self.dataArray1)
+        self.data_with_labels = algorythm_tidbscan(self.minPts5, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label)
+            self.labels.append(point.label[1])
         self.assertTrue((self.labels == [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]))
