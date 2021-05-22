@@ -18,7 +18,7 @@ def compute_euclides_distance_for_all_points(data):
             distance = distance_fun_euclides(data[i], data[j])
             list_point = [distance, data[j].id]
             data[i].distances_to_all_points.append(list_point)
-            list_point[1] = data[i].id
+            list_point = [distance, data[i].id]
             data[j].distances_to_all_points.append(list_point)
         i = i + 1
     for point in data:
@@ -87,7 +87,7 @@ def print_hi(name):
                                 [18, 18], [19, 20], [21, 19], [15, 5], [16, 16], [0, 9], [1, 4], [19, 18],
                                 [20, 17], [18, 18], [24, 0]])
     #dataArray22 = dataArray2.reshape(1, -1)
-    algorythm_dbscan(3, 4, dataArray, 1)
+    algorythm_dbscan(3, 4, dataArray2, 1)
     #algorythm_dbscan(3, 4, dataArray2, 1)
     a = int(math.pow(90, 1/4))
     print(f'a: {a}')

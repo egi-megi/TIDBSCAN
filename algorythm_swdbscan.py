@@ -122,9 +122,9 @@ def grid_clustering(data, minPts, eps, displacement):
     if displacement != 0:
         label_number = 1
     for cell in list_of_cells_with_max_number_of_cells:
-        _, current_cluster_id = algorythm_tidbscan_without_read(minPts, eps, cell.points, label_number, current_cluster_id)
-        #_, current_cluster_id = algorythm_dbscan_without_read(minPts, eps, cell.points, label_number,
-        #                                                        current_cluster_id)
+        #_, current_cluster_id = algorythm_tidbscan_without_read(minPts, eps, cell.points, label_number, current_cluster_id)
+        _, current_cluster_id = algorythm_dbscan_without_read(minPts, eps, cell.points, label_number,
+                                                                current_cluster_id)
         #clustering = DBSCAN(eps=4, min_samples=3).fit(cell.points)
         cell.visited = 1
     for i in range(1, divider + 1):
@@ -134,9 +134,9 @@ def grid_clustering(data, minPts, eps, displacement):
         for cell in cells_list:
             if cell.visited == 0 and (cell.number_of_points >= min_range and cell.number_of_points < max_range):
                 #clustering = DBSCAN(eps=4, min_samples=3).fit(cell.points)
-                _, current_cluster_id = algorythm_tidbscan_without_read(minPts, eps, cell.points, label_number, current_cluster_id)
-                #_, current_cluster_id = algorythm_dbscan_without_read(minPts, eps, cell.points, label_number,
-                #                                                        current_cluster_id)
+                #_, current_cluster_id = algorythm_tidbscan_without_read(minPts, eps, cell.points, label_number, current_cluster_id)
+                _, current_cluster_id = algorythm_dbscan_without_read(minPts, eps, cell.points, label_number,
+                                                                        current_cluster_id)
     return data
 
 
