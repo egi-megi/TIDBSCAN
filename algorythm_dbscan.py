@@ -16,9 +16,9 @@ def compute_euclides_distance_for_all_points(data):
     while i < len(data) - 1:
         for j in range(i + 1, len(data)):
             distance = distance_fun_euclides(data[i], data[j])
-            list_point = [distance, data[j].id]
+            list_point = [distance, data[j]]  # data[j].id j
             data[i].distances_to_all_points.append(list_point)
-            list_point = [distance, data[i].id]
+            list_point = [distance, data[i]]
             data[j].distances_to_all_points.append(list_point)
         i = i + 1
     for point in data:
@@ -27,9 +27,9 @@ def compute_euclides_distance_for_all_points(data):
 
 def rangeQuery(seedPoint, eps, data):
     neighbours = []
-    for item in data[seedPoint.id].distances_to_all_points:
+    for item in seedPoint.distances_to_all_points:
         if item[0] <= eps:
-            neighbours.append(data[item[1]])
+            neighbours.append(item[1])
     return neighbours
 
 
