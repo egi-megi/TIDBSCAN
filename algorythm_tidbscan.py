@@ -12,6 +12,7 @@ class Point:
         self.coordinates = c
         self.id = id
         self.label = ["UNDEFINED", "UNDEFINED", "UNDEFINED"]
+        self.distances_to_all_points = []
 
 
 # X = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25], [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
@@ -113,11 +114,11 @@ def rangeQuery(seedPoint, eps, sorted_data_base_with_ref_point):
 
 def algorythm_tidbscan(minPts, eps, data, label_number):
     dataBase = read_database(data)
-    algorythm_tidbscan_wo_read(minPts, eps, dataBase, label_number,0)
+    algorythm_tidbscan_without_read(minPts, eps, dataBase, label_number, 0)
     return dataBase
 
 
-def algorythm_tidbscan_wo_read(minPts, eps, dataBase, label_number, min_cluster_id):
+def algorythm_tidbscan_without_read(minPts, eps, dataBase, label_number, min_cluster_id):
     clusterId = min_cluster_id
     data_base_sort_with_ref_point = distance_from_ref_point(dataBase)
     # print(f'data_base_sort_with_ref_point[0]: , {data_base_sort_with_ref_point[0].id}')

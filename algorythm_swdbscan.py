@@ -3,8 +3,9 @@ import math
 import copy
 from sklearn.cluster import DBSCAN
 
-from algorythm_tidbscan import Point, algorythm_tidbscan_wo_read, read_database, distance_fun_euclides, find_ref_point, sort_fun, distance_from_ref_point, \
+from algorythm_tidbscan import Point, algorythm_tidbscan_without_read, read_database, distance_fun_euclides, find_ref_point, sort_fun, distance_from_ref_point, \
     point_to_check, find_border_for_checked_point, rangeQuery
+from algorythm_dbscan import algorythm_dbscan_without_read
 
 
 class Cell:
@@ -33,17 +34,24 @@ def compute_min_max(data, displacement, degree_of_root, n):
     if displacement != 0:
         displacement_value = int((math.pow(n, 1/degree_of_root))/2)
     for coordinate in data[0].coordinates:
-        max_coor.append(coordinate + 1)
-        min_coor.append(coordinate - 1)
+        max_coor.append(coordinate)
+        min_coor.append(coordinate)
     for j in range(0, len(data)):
         for k in range(0, len(data[0].coordinates)):
-            if data[j].coordinates[k] + 1 > max_coor[k]:
-                max_coor[k] = data[j].coordinates[k] + 1
-            if data[j].coordinates[k] - 1 < min_coor[k]:
-                min_coor[k] = data[j].coordinates[k] -1
+            if data[j].coordinates[k] > max_coor[k]:
+                max_coor[k] = data[j].coordinates[k]
+            if data[j].coordinates[k] < min_coor[k]:
+                min_coor[k] = data[j].coordinates[k]
     for i in range(0, len(min_coor)):
-        min_coor[i] = min_coor[i] + displacement_value
-        max_coor[i] = max_coor[i] + displacement_value
+        displacement = 0
+        if min_coor[i] != 0:
+            displacement = min_coor[i]/10
+        elif max_coor[i] != 0:
+            displacement = max_coor[i]/10
+        else:
+            displacement = 0.1
+        min_coor[i] = min_coor[i] + displacement_value - displacement
+        max_coor[i] = max_coor[i] + displacement_value + displacement
     return min_coor, max_coor
 
 
@@ -114,7 +122,9 @@ def grid_clustering(data, minPts, eps, displacement):
     if displacement != 0:
         label_number = 1
     for cell in list_of_cells_with_max_number_of_cells:
-        _, current_cluster_id = algorythm_tidbscan_wo_read(minPts, eps, cell.points, label_number, current_cluster_id)
+        _, current_cluster_id = algorythm_tidbscan_without_read(minPts, eps, cell.points, label_number, current_cluster_id)
+        #_, current_cluster_id = algorythm_dbscan_without_read(minPts, eps, cell.points, label_number,
+        #                                                        current_cluster_id)
         #clustering = DBSCAN(eps=4, min_samples=3).fit(cell.points)
         cell.visited = 1
     for i in range(1, divider + 1):
@@ -124,7 +134,9 @@ def grid_clustering(data, minPts, eps, displacement):
         for cell in cells_list:
             if cell.visited == 0 and (cell.number_of_points >= min_range and cell.number_of_points < max_range):
                 #clustering = DBSCAN(eps=4, min_samples=3).fit(cell.points)
-                _, current_cluster_id = algorythm_tidbscan_wo_read(minPts, eps, cell.points,label_number, current_cluster_id)
+                _, current_cluster_id = algorythm_tidbscan_without_read(minPts, eps, cell.points, label_number, current_cluster_id)
+                #_, current_cluster_id = algorythm_dbscan_without_read(minPts, eps, cell.points, label_number,
+                #                                                        current_cluster_id)
     return data
 
 
