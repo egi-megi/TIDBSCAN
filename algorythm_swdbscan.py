@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import copy
+from sklearn.cluster import DBSCAN
 
 from algorythm_tidbscan import Point, algorythm_tidbscan_wo_read, read_database, distance_fun_euclides, find_ref_point, sort_fun, distance_from_ref_point, \
     point_to_check, find_border_for_checked_point, rangeQuery
@@ -32,14 +33,14 @@ def compute_min_max(data, displacement, degree_of_root, n):
     if displacement != 0:
         displacement_value = int((math.pow(n, 1/degree_of_root))/2)
     for coordinate in data[0].coordinates:
-        max_coor.append(coordinate)
-        min_coor.append(coordinate)
+        max_coor.append(coordinate + 1)
+        min_coor.append(coordinate - 1)
     for j in range(0, len(data)):
         for k in range(0, len(data[0].coordinates)):
-            if data[j].coordinates[k] > max_coor[k]:
-                max_coor[k] = data[j].coordinates[k]
-            if data[j].coordinates[k] < min_coor[k]:
-                min_coor[k] = data[j].coordinates[k]
+            if data[j].coordinates[k] + 1 > max_coor[k]:
+                max_coor[k] = data[j].coordinates[k] + 1
+            if data[j].coordinates[k] - 1 < min_coor[k]:
+                min_coor[k] = data[j].coordinates[k] -1
     for i in range(0, len(min_coor)):
         min_coor[i] = min_coor[i] + displacement_value
         max_coor[i] = max_coor[i] + displacement_value
@@ -59,7 +60,7 @@ def divide_grid(data, displacement):
     for dim in range(0, len(data[0].coordinates)-1):
         new_list = []
         count = 1
-        print("for dim "+str(dim)+" num parts: "+str(len(np.arange(min_coor[dim],max_coor[dim], range_division[dim]).tolist())))
+        #print("for dim "+str(dim)+" num parts: "+str(len(np.arange(min_coor[dim],max_coor[dim], range_division[dim]).tolist())))
         for cell_begin in (np.arange(min_coor[dim],max_coor[dim], range_division[dim]).tolist()):
             for old_cell in cells_list:
                 new_cell=copy.deepcopy(old_cell)
@@ -107,12 +108,14 @@ def grid_clustering(data, minPts, eps, displacement):
     list_of_cells_with_max_number_of_cells, max_points = find_max_number_of_points(cells_list)
     divider = 5
     threshold = max_points/divider
+    current_cluster_id=0
     #result = []
-    label_number = 1
+    label_number = 0
     if displacement != 0:
-        label_number = 2
+        label_number = 1
     for cell in list_of_cells_with_max_number_of_cells:
-        algorythm_tidbscan_wo_read(minPts, eps, cell.points, label_number)
+        _, current_cluster_id = algorythm_tidbscan_wo_read(minPts, eps, cell.points, label_number, current_cluster_id)
+        #clustering = DBSCAN(eps=4, min_samples=3).fit(cell.points)
         cell.visited = 1
     for i in range(1, divider + 1):
         eps = eps + 0.1 * eps
@@ -120,7 +123,8 @@ def grid_clustering(data, minPts, eps, displacement):
         max_range = max_points - (i - 1) * threshold
         for cell in cells_list:
             if cell.visited == 0 and (cell.number_of_points >= min_range and cell.number_of_points < max_range):
-                algorythm_tidbscan_wo_read(minPts, eps, cell.points,label_number)
+                #clustering = DBSCAN(eps=4, min_samples=3).fit(cell.points)
+                _, current_cluster_id = algorythm_tidbscan_wo_read(minPts, eps, cell.points,label_number, current_cluster_id)
     return data
 
 
@@ -132,12 +136,12 @@ def get_matrix_M(max_cluster_label_1, max_cluster_label_2, dataBase):
             list_of_points = []
             row.append(list_of_points)
         matrix_M.append(row)
-        for point in dataBase:
-            if point.label[0] == "UNDEFINED":
-                point.label[0] = -1
-            if point.label[1] == "UNDEFINED":
-                point.label[1] = -1
-            matrix_M[point.label[0]][point.label[1]].append(point)
+    for point in dataBase:
+        if point.label[0] == "UNDEFINED":
+            point.label[0] = -1
+        if point.label[1] == "UNDEFINED":
+            point.label[1] = -1
+        matrix_M[point.label[0]][point.label[1]].append(point)
     return matrix_M
 
 
@@ -188,10 +192,12 @@ def print_hi(name):
 
     print(f'Hi, {name}')
 
-    dataArray = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25],
-                          [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
-                          [20, 19, 18], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
-    algorythm_swdbscan(3, 4, dataArray)
+    dataArray2 = np.array([[22, 0], [23, 1], [24, 2], [1, 13], [4, 11], [6, 8], [3, 7], [20, 19],
+                                [18, 18], [19, 20], [21, 19], [15, 5], [16, 16], [0, 9], [1, 4], [19, 18],
+                                [20, 17], [18, 18], [24, 0]])
+    #dataArray22 = dataArray2.reshape(1, -1)
+    #algorythm_swdbscan(3, 4, dataArray)
+    algorythm_swdbscan(3, 4, dataArray2)
     a = int(math.pow(90, 1/4))
     print(f'a: {a}')
 

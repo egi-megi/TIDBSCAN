@@ -16,10 +16,13 @@ class Point:
 
 # X = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25], [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
 #               [20, 19, 18], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
-# clustering = DBSCAN(eps=4, min_samples=3).fit(X)
-# print(clustering.labels_)
+X = np.array([[22, 0], [23, 1], [24, 2], [1, 13], [4, 11], [6, 8], [3, 7], [20, 19],
+                                [18, 18], [19, 20], [21, 19], [15, 5], [16, 16], [0, 9], [1, 4], [19, 18],
+                                [20, 17], [18, 18], [24, 0]])
+clustering = DBSCAN(eps=4, min_samples=3).fit(X)
+print(clustering.labels_)
 #
-# print(clustering)
+print(clustering)
 
 
 def printResult(dataBase):
@@ -110,10 +113,12 @@ def rangeQuery(seedPoint, eps, sorted_data_base_with_ref_point):
 
 def algorythm_tidbscan(minPts, eps, data, label_number):
     dataBase = read_database(data)
-    return algorythm_tidbscan_wo_read(minPts, eps, dataBase, label_number)
+    algorythm_tidbscan_wo_read(minPts, eps, dataBase, label_number,0)
+    return dataBase
 
-def algorythm_tidbscan_wo_read(minPts, eps, dataBase, label_number):
-    clusterId = 0
+
+def algorythm_tidbscan_wo_read(minPts, eps, dataBase, label_number, min_cluster_id):
+    clusterId = min_cluster_id
     data_base_sort_with_ref_point = distance_from_ref_point(dataBase)
     # print(f'data_base_sort_with_ref_point[0]: , {data_base_sort_with_ref_point[0].id}')
     # print(f'data_base[0]: , {dataBase[0].id}')
@@ -130,23 +135,23 @@ def algorythm_tidbscan_wo_read(minPts, eps, dataBase, label_number):
             seedSet = neighbors
         while seedSet:
             seedPoint = seedSet.pop()
-            if dataBase[seedPoint.id].label[label_number] == -1:
-                dataBase[seedPoint.id].label[label_number] = clusterId
+            if seedPoint.label[label_number] == -1:
+                seedPoint.label[label_number] = clusterId
                 continue
-            if dataBase[seedPoint.id].label[label_number] == "UNDEFINED":
+            if seedPoint.label[label_number] == "UNDEFINED":
                 neighborsForSeedPoint = rangeQuery(seedPoint, eps, data_base_sort_with_ref_point)
                 if len(neighborsForSeedPoint) < minPts - 1:
-                    dataBase[seedPoint.id].label[label_number] = clusterId
+                    seedPoint.label[label_number] = clusterId
                     continue
                 if len(neighborsForSeedPoint) >= minPts - 1:
-                    dataBase[seedPoint.id].label[label_number] = clusterId
+                    seedPoint.label[label_number] = clusterId
                     seed = seedSet + neighborsForSeedPoint
                     seedSet = seed
                     continue
                 continue
         clusterId += 1
     printResult(dataBase)
-    return dataBase
+    return dataBase, clusterId
 
 
 def print_hi(name):
