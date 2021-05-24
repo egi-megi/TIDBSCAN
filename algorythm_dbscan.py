@@ -70,7 +70,7 @@ def algorythm_dbscan_without_read(minPts, eps, dataBase, label_number, min_clust
                     continue
                 continue
         clusterId += 1
-    printResult(dataBase)
+    # printResult(dataBase)
     return dataBase, clusterId
 
 def print_hi(name):

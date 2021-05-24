@@ -119,8 +119,8 @@ def algorythm_tidbscan(minPts, eps, data, label_number):
 def algorythm_tidbscan_without_read(minPts, eps, dataBase, label_number, min_cluster_id):
     clusterId = min_cluster_id
     data_base_sort_with_ref_point = distance_from_ref_point(dataBase)
-    print(f'data_base_sort_with_ref_point[0]: , {data_base_sort_with_ref_point[0].id}')
-    print(f'data_base[0]: , {dataBase[0].id}')
+    # print(f'data_base_sort_with_ref_point[0]: , {data_base_sort_with_ref_point[0].id}')
+    # print(f'data_base[0]: , {dataBase[0].id}')
 
     for point in dataBase:
         if point.label[label_number] != "UNDEFINED":
@@ -146,14 +146,14 @@ def algorythm_tidbscan_without_read(minPts, eps, dataBase, label_number, min_clu
                     seedPoint.label[label_number] = clusterId
                     seed = seedSet + neighborsForSeedPoint
                     seedSet = seed
-                    print("set")
-                    for i in seedSet:
-                        print(f'Seed: {i.id}')
-                    print("end set")
+                    # print("set")
+                    # for i in seedSet:
+                    #     print(f'Seed: {i.id}')
+                    # print("end set")
                     continue
                 continue
         clusterId += 1
-    printResult(dataBase)
+    # printResult(dataBase)
     return dataBase, clusterId
 
 

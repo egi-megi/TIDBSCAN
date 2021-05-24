@@ -1,4 +1,3 @@
-from sklearn import metrics
 import tensorflow_hub as hub
 import pandas as pd
 import sklearn
@@ -6,6 +5,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 import algorythm_tidbscan as tidb
+import algorythm_dbscan as db
+import algorythm_swdbscan as swdb
 
 # Follow readme and update location of TENSORFLOW MODEL:
 TENSORFLOW_MODEL = 'model/'
@@ -28,10 +29,10 @@ def read_n_tweets(filepath, n=-1):
 def read_n_tweets_from_data(path=DATA, number=-1):
     master_vector = []
     class_vector = []
-    for d in path:
+    for el_index, d in enumerate(path):
         vector = read_n_tweets('data/' + d, number)
         master_vector.extend(vector)
-        class_vector.extend([d for i in vector])
+        class_vector.extend([el_index for i in vector])
 
     return master_vector, class_vector
 
@@ -39,10 +40,10 @@ def read_n_tweets_from_data(path=DATA, number=-1):
 def read_all_tweets(path=DATA):
     master_vector = []
     class_vector = []
-    for d in path:
+    for el_index, d in enumerate(path):
         vector = read_n_tweets('data/' + d)
         master_vector.extend(vector)
-        class_vector.extend([d for i in vector])
+        class_vector.extend([el_index for i in vector])
 
     return master_vector, class_vector
 
@@ -105,30 +106,44 @@ def plot_basic_statistics(mini, medi, maxi):
         "max": max(maxi),
         "med": np.median(medi)
     }
-    print("Minimum zbioru min={:.2f}, Max zbioru max={:.2f}, Mediana zbioru median={:.2f}".format(s['min'], s['max'], s['med']))
+    print("Minimum zbioru min={:.2f}, Max zbioru max={:.2f}, Mediana zbioru median={:.2f}".format(s['min'], s['max'],
+                                                                                                  s['med']))
 
 
-def save_data(data, filename):
-    with open(filename, 'wb') as file:
-        pickle.dump(data, file)
-
-
-def get_results_for_multiple_eps(vector, eps_start, eps_end, n, min_pts=2):
+def dbscan(vector, eps_start, eps_end, n, min_pts=2):
     delta = (eps_end - eps_start) / n
     results = []
     for i in range(n):
-        r = tidb.algorythm_tidbscan(min_pts, eps_start + i * delta, vector)
+        r = db.algorythm_dbscan(min_pts, eps_start + i * delta, vector, 1)
         results.append(r)
     return results
 
 
-def get_results_for_multiple_eps_not_our_implementation(vector, eps_start, eps_end, n, min_pts=2):
+def tidbscan(vector, eps_start, eps_end, n, min_pts=2):
+    delta = (eps_end - eps_start) / n
+    results = []
+    for i in range(n):
+        r = tidb.algorythm_tidbscan(min_pts, eps_start + i * delta, vector, 1)
+        results.append(r)
+    return results
+
+
+def dbscan_sklearn(vector, eps_start, eps_end, n, min_pts=2):
     epsilons = get_epsilon_array(eps_start, eps_end, n)
     results = []
     for i in range(n):
         r = sklearn.cluster.dbscan(X=vector, eps=epsilons[i], min_samples=min_pts)
         results.append(r[1])
 
+    return results
+
+
+def swdbscan(vector, eps_start, eps_end, n, min_pts=2):
+    delta = (eps_end - eps_start) / n
+    results = []
+    for i in range(n):
+        r = swdb.algorythm_swdbscan(min_pts, eps_start + i * delta, vector)
+        results.append(r)
     return results
 
 
@@ -140,8 +155,8 @@ def get_df_for_test_results(results, class_vector, eps_start, eps_end, n):
         # current_epsi = epsilon_start + el_index * (epsilon_end - epsilon_start) / n
         for num in range(len(DATA)):
             cluster = []
-            first_occ = class_vector.index(DATA[num])
-            last_occ = next(i for i in reversed(range(len(class_vector))) if class_vector[i] == DATA[num])
+            first_occ = class_vector.index(num)
+            last_occ = next(i for i in reversed(range(len(class_vector))) if class_vector[i] == num)
             for point in result[first_occ:last_occ]:
                 cluster.append(point)
             name = 'eps_' + str(round(epsilons[el_index], 2)) + '_' + DATA[num]
@@ -159,10 +174,10 @@ def get_df_for_results(results, class_vector, epsilon_start, epsilon_end, n):
         # current_epsi = epsilon_start + el_index * (epsilon_end - epsilon_start) / n
         for num in range(len(DATA)):
             cluster = []
-            first_occ = class_vector.index(DATA[num])
-            last_occ = next(i for i in reversed(range(len(class_vector))) if class_vector[i] == DATA[num])
+            first_occ = class_vector.index(num)
+            last_occ = next(i for i in reversed(range(len(class_vector))) if class_vector[i] == num)
             for point in result[first_occ:last_occ]:
-                cluster.append(int(point.label))
+                cluster.append(int(point.label[1]))  # From new point.label format we need to extract first element
             name = 'eps_' + str(round(epsilons[el_index], 2)) + '_' + DATA[num]
             tmp_df = pd.DataFrame({name: cluster})
             df = pd.concat([df, tmp_df], ignore_index=False, axis=1)
@@ -170,39 +185,14 @@ def get_df_for_results(results, class_vector, epsilon_start, epsilon_end, n):
     return df
 
 
-def get_purity_for_n_results_dbscan(class_vector, results, number):
-    scores = []
-    for i in range(number):
-        scores.append(purity_score(class_vector, results[i]))
-
-    return scores
-
-
-def get_purity_for_n_results_tidbscan(class_vector, results, number):
-    scores = []
-    flat = []
-    for i in range(number):
-        flat.append([])
-        for point in results[i]:
-            flat[i].append(point.label)
-
-    for i in range(number):
-        scores.append(purity_score(class_vector, flat[i]))
-
-    return scores
-
-
-def purity_score(y_true, y_pred):
-    # Source: https://stackoverflow.com/a/51672699
-    # compute contingency matrix (also called confusion matrix)
-    contingency_matrix = metrics.cluster.contingency_matrix(y_true, y_pred)
-    # return purity
-    return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
-
-
 def get_epsilon_array(eps_start, eps_end, number):
     c = (eps_end - eps_start) / number
     return [eps_start + i * c for i in range(number)]
+
+
+def save_data(data, filename):
+    with open(filename, 'wb') as file:
+        pickle.dump(data, file)
 
 
 def read_computed_data(dataset):
@@ -219,20 +209,20 @@ def get_all_groups_in_result(results, result_nr, tweets, tidbscan=False):
     indexes_of_points = []
     list_of_tweets = []
 
-    points =[]
+    points = []
 
     for i, result in enumerate(results[result_nr]):
-        points.append(result.label)
+        points.append(result.label[1])
 
-        if group_id.count(result.label) == 0:
+        if group_id.count(result.label[1]) == 0:
             number_of_points.append(0)
-            group_id.append(result.label)
+            group_id.append(result.label[1])
             indexes_of_points.append([i])
             list_of_tweets.append([tweets[i]])
-            index = group_id.index(result.label)
+            index = group_id.index(result.label[1])
             number_of_points[index] = number_of_points[index] + 1
         else:
-            index = group_id.index(result.label)
+            index = group_id.index(result.label[1])
             indexes_of_points[index].append(i)
             list_of_tweets[index].append(tweets[i])
             number_of_points[index] = number_of_points[index] + 1
@@ -251,6 +241,7 @@ def get_all_groups_in_result(results, result_nr, tweets, tidbscan=False):
         stats["med_sent_length"].append(np.median(length))
 
     return [group_id, number_of_points, indexes_of_points, list_of_tweets, stats, points]
+
 
 if __name__ == '__main__':
     pass
