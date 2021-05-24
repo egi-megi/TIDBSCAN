@@ -14,14 +14,14 @@ class GroupsTestCase(unittest.TestCase):
         self.data_base_sort_with_ref_point_1 = distance_from_ref_point(self.data1)
         self.minPts = 3
         self.eps = 4
-        self.label_number = 1
+        self.label_number = 0
 
     def test_groups_0(self):
         #self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray1, self.label_number)
         self.data_with_labels = algorythm_dbscan(self.minPts, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label[1])
+            self.labels.append(point.label[0])
         print(self.labels)
         self.assertTrue((self.labels == [-1, 0, 1, 2, 2, 2, 1, 0, 1, 0, 0, -1]))
 
@@ -30,7 +30,7 @@ class GroupsTestCase(unittest.TestCase):
         self.data_with_labels = algorythm_dbscan(4, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label[1])
+            self.labels.append(point.label[0])
         self.assertTrue((self.labels == [-1, 0, -1, -1, -1, -1, -1, 0, -1, 0, 0, -1]))
 
     def test_groups_minPts_2(self):
@@ -38,7 +38,7 @@ class GroupsTestCase(unittest.TestCase):
         self.data_with_labels = algorythm_dbscan(2, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label[1])
+            self.labels.append(point.label[0])
         self.assertTrue((self.labels == [-1, 0, 1, 2, 2, 2, 1, 0, 1, 0, 0, -1]))
 
     def test_groups_noise(self):
@@ -46,5 +46,5 @@ class GroupsTestCase(unittest.TestCase):
         self.data_with_labels = algorythm_dbscan(5, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
-            self.labels.append(point.label[1])
+            self.labels.append(point.label[0])
         self.assertTrue((self.labels == [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]))

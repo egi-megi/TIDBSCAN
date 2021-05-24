@@ -28,7 +28,7 @@ print(clustering)
 
 def printResult(dataBase):
     for point in dataBase:
-        print(f'Point {point.id} is in group {point.label[1]}\n')
+        print(f'Point {point.id} is in group {point.label[0]}\n')
 
 
 def read_database(data):
@@ -160,7 +160,7 @@ def print_hi(name):
     dataArray = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25],
                           [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
                           [20, 19, 18], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
-    algorythm_tidbscan(3, 4, dataArray, 1)
+    algorythm_tidbscan(3, 4, dataArray, 0)
 
 
 if __name__ == '__main__':
