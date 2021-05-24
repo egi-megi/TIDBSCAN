@@ -16,7 +16,7 @@ def compute_euclides_distance_for_all_points(data):
     while i < len(data) - 1:
         for j in range(i + 1, len(data)):
             distance = distance_fun_euclides(data[i], data[j])
-            list_point = [distance, data[j]]  # data[j].id j
+            list_point = [distance, data[j]]
             data[i].distances_to_all_points.append(list_point)
             list_point = [distance, data[i]]
             data[j].distances_to_all_points.append(list_point)
@@ -42,8 +42,6 @@ def algorythm_dbscan(minPts, eps, data, label_number):
 def algorythm_dbscan_without_read(minPts, eps, dataBase, label_number, min_cluster_id):
     clusterId = min_cluster_id
     compute_euclides_distance_for_all_points(dataBase)
-    # print(f'data_base_sort_with_ref_point[0]: , {data_base_sort_with_ref_point[0].id}')
-    # print(f'data_base[0]: , {dataBase[0].id}')
 
     for point in dataBase:
         if point.label[label_number] != "UNDEFINED":

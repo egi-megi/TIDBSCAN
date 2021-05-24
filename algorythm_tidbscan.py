@@ -67,8 +67,6 @@ def distance_from_ref_point(dataBase):
     for i in range(0, len(dataBase)):
         dataBase[i].ref_distance = distance_fun_euclides(dataBase[i], ref_point)
     data_base_sorted_ref_point = sorted(dataBase, key=sort_fun)
-    # for i in range(0, len(ref_point.coordinates)):
-    #     print(f'Ref point coorinate {i}: {ref_point.coordinates[i]}')
     return data_base_sorted_ref_point
 
 
