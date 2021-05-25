@@ -2,6 +2,7 @@ import numpy as np
 import math
 import copy
 from sklearn.cluster import DBSCAN
+import time
 
 from algorythm_tidbscan import read_database
 from algorythm_dbscan import algorythm_dbscan_without_read
@@ -54,8 +55,8 @@ def compute_min_max(data, displacement, degree_of_root, n):
             displacement = max_coor[i]/10
         else:
             displacement = 0.1
-        min_coor[i] = min_coor[i] - displacement_value - displacement
-        max_coor[i] = max_coor[i] - displacement_value + displacement
+        min_coor[i] = min_coor[i] + displacement_value - displacement
+        max_coor[i] = max_coor[i] + displacement_value + displacement
     return min_coor, max_coor
 
 
@@ -223,7 +224,7 @@ def algorythm_swdbscan(minPts, eps, data):
 
 def print_hi(name):
 
-    print(f'Hi, {name}')
+    #print(f'Hi, {name}')
 
     X_2 = np.array([[22, 0], [23, 1], [24, 2], [1, 13], [4, 11], [6, 8], [3, 7], [20, 19],
                                     [18, 18], [19, 20], [21, 19], [15,  5], [0,  9], [1, 4], [19, 18],
@@ -242,10 +243,12 @@ def print_hi(name):
 
     #dataArray22 = dataArray2.reshape(1, -1)
     #algorythm_swdbscan(3, 4, dataArray)
-    data_to_print = algorythm_swdbscan(4, 4, X_3)
-    print_labels(data_to_print)
+    start_time = time.time()
+    data_to_print = algorythm_swdbscan(4, 4, X_2)
+    print("--- %s seconds ---" % (time.time() - start_time))
+    #print_labels(data_to_print)
     a = int(math.pow(90, 1/4))
-    print(f'a: {a}')
+    #print(f'a: {a}')
 
 
 if __name__ == '__main__':

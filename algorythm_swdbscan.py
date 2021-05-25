@@ -2,6 +2,7 @@ import numpy as np
 import math
 import copy
 from sklearn.cluster import DBSCAN
+import time
 
 from algorythm_tidbscan import read_database
 from algorythm_dbscan import algorythm_dbscan_without_read
@@ -171,6 +172,14 @@ def concatenate_rows_one(matrix_M, max_cluster_label_2, minPts):
                         return 1
     return 0
 
+
+def concatenate_rows(matrix_M, max_cluster_label_1, max_cluster_label_2, minPts):
+    change = concatenate_rows_one(matrix_M,max_cluster_label_2,minPts)
+    while change > 0:
+        change = concatenate_rows_one(matrix_M, max_cluster_label_2, minPts)
+    return matrix_M
+
+
 def compute_ending_clusters(smaller_matrix_M, max_cluster_label_2):
     for row_num in range(0, len(smaller_matrix_M) - 1):
         row = smaller_matrix_M[row_num]
@@ -181,11 +190,7 @@ def compute_ending_clusters(smaller_matrix_M, max_cluster_label_2):
         point.label[2] = -1
 
 
-def concatenate_rows(matrix_M, max_cluster_label_1, max_cluster_label_2, minPts):
-    change = concatenate_rows_one(matrix_M,max_cluster_label_2,minPts)
-    while change > 0:
-        change = concatenate_rows_one(matrix_M, max_cluster_label_2, minPts)
-    return matrix_M
+
 
 
 # def compute_ending_clusters(smaller_matrix_M, minPts):
@@ -243,7 +248,7 @@ def algorythm_swdbscan(minPts, eps, data):
 
 def print_hi(name):
 
-    print(f'Hi, {name}')
+    #print(f'Hi, {name}')
 
     X_2 = np.array([[22, 0], [23, 1], [24, 2], [1, 13], [4, 11], [6, 8], [3, 7], [20, 19],
                                     [18, 18], [19, 20], [21, 19], [15,  5], [0,  9], [1, 4], [19, 18],
@@ -262,10 +267,12 @@ def print_hi(name):
 
     #dataArray22 = dataArray2.reshape(1, -1)
     #algorythm_swdbscan(3, 4, dataArray)
-    data_to_print = algorythm_swdbscan(4, 4, X_3)
-    print_labels(data_to_print)
+    start_time = time.time()
+    data_to_print = algorythm_swdbscan(4, 4, X_2)
+    print("--- %s seconds ---" % (time.time() - start_time))
+    #print_labels(data_to_print)
     a = int(math.pow(90, 1/4))
-    print(f'a: {a}')
+    #print(f'a: {a}')
 
 
 if __name__ == '__main__':

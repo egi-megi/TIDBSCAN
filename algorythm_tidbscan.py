@@ -5,6 +5,7 @@
 from sklearn.cluster import DBSCAN
 import numpy as np
 import math
+import time
 
 
 class Point:
@@ -149,18 +150,24 @@ def algorythm_tidbscan_without_read(minPts, eps, dataBase, label_number, min_clu
                     continue
                 continue
         clusterId += 1
-    printResult(dataBase)
+    #printResult(dataBase)
     return dataBase, clusterId
 
 
 def print_hi(name):
 
-    print(f'Hi, {name}')
+    #print(f'Hi, {name}')
 
     dataArray = np.array([[18, 18, 21], [4, 11, 9], [0, 0, 0], [22, 0, 25],
                           [23, 1, 29], [24, 2, 26], [10, 15, 15], [5, 8, 10],
                           [20, 19, 18], [3, 13, 11], [19, 20, 19], [21, 19, 20]])
-    algorythm_tidbscan(3, 4, dataArray, 0)
+
+    X_2 = np.array([[22, 0], [23, 1], [24, 2], [1, 13], [4, 11], [6, 8], [3, 7], [20, 19],
+                                    [18, 18], [19, 20], [21, 19], [15,  5], [0,  9], [1, 4], [19, 18],
+                                    [20, 17], [18, 19], [10, 16], [24,  0]])
+    start_time = time.time()
+    algorythm_tidbscan(3, 4, X_2, 0)
+    print("--- %s seconds ---" % (time.time() - start_time))
 
 
 if __name__ == '__main__':
