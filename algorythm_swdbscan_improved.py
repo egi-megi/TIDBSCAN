@@ -73,6 +73,7 @@ def divide_grid(data, displacement):
         new_list = []
         count = 1
         #print("for dim "+str(dim)+" num parts: "+str(len(np.arange(min_coor[dim],max_coor[dim], range_division[dim]).tolist())))
+        # if len(cell_list) < number_cells:
         for cell_begin in (np.arange(min_coor[dim],max_coor[dim], range_division[dim]).tolist()):
             for old_cell in cells_list:
                 new_cell=copy.deepcopy(old_cell)
@@ -158,17 +159,7 @@ def get_matrix_M(max_cluster_label_1, max_cluster_label_2, dataBase):
     return matrix_M
 
 
-def concatenate_rows_one(matrix_M, max_cluster_label_2, max_cluster_label_1, minPts):
-    # for row in matrix_M:
-    #     for row2 in matrix_M:
-    #         if row != row2:
-    #             for col in range(0, max_cluster_label_2 - 1):
-    #                 if len(row[col]) >= minPts and len(row2[col]) >= minPts:
-    #                     for c in range(0, max_cluster_label_2):
-    #                         row[c].extend(row2[c])
-    #                     matrix_M.remove(row2)
-    #                     print("merging")
-    #                     return 1
+def concatenate_rows_one(matrix_M, max_cluster_label_2, max_cluster_label_1):
     for row in range(0, max_cluster_label_1 - 2):
         for row2 in range(1, max_cluster_label_1 - 1):
             for col in range(0, max_cluster_label_2 - 1):
@@ -182,7 +173,7 @@ def concatenate_rows_one(matrix_M, max_cluster_label_2, max_cluster_label_1, min
 
 
 def concatenate_rows(matrix_M, max_cluster_label_1, max_cluster_label_2, minPts):
-    change = concatenate_rows_one(matrix_M, max_cluster_label_1, max_cluster_label_2,minPts)
+    change = concatenate_rows_one(matrix_M, max_cluster_label_1, max_cluster_label_2)
     while change > 0:
         change = concatenate_rows_one(matrix_M, max_cluster_label_2, minPts)
     for col in range(0, max_cluster_label_2 - 1):
@@ -192,51 +183,13 @@ def concatenate_rows(matrix_M, max_cluster_label_1, max_cluster_label_2, minPts)
                     matrix_M[row][col].extend(matrix_M[max_cluster_label_1 - 1][col])
     return matrix_M
 
-# def concatenate_cols_one(matrix_M, max_cluster_label_2, max_cluster_label_1, minPts):
-#     # for row in matrix_M:
-#     #     for row2 in matrix_M:
-#     #         if row != row2:
-#     #             for col in range(0, max_cluster_label_2 - 1):
-#     #                 if len(row[col]) >= minPts and len(row2[col]) >= minPts:
-#     #                     for c in range(0, max_cluster_label_2):
-#     #                         row[c].extend(row2[c])
-#     #                     matrix_M.remove(row2)
-#     #                     print("merging")
-#     #                     return 1
-#     for col in range(0, max_cluster_label_2 - 2):
-#         for col2 in range(1, max_cluster_label_2 - 1):
-#             for row in range(0, max_cluster_label_1 - 1):
-#                 if len(matrix_M[row][col]) >= 1 and len(matrix_M[row][col2]) >= 1:
-#                     for r in range(0, max_cluster_label_1):
-#                         matrix_M[r][col].extend(matrix_M[r][col2])
-#                     matrix_M.remove(matrix_M[col2])
-#                     print("merging")
-#                     return 1
-#     return 0
 
-
-# def concatenate_cols(matrix_M, max_cluster_label_1, max_cluster_label_2, minPts):
-#     change = concatenate_cols_one(matrix_M, max_cluster_label_1, max_cluster_label_2,minPts)
-#     while change > 0:
-#         change = concatenate_cols_one(matrix_M, max_cluster_label_2, minPts)
-#     for row in range(0, max_cluster_label_1 - 1):
-#         if len(matrix_M[row][max_cluster_label_2 - 1]) > 0:
-#             for col in range(0, max_cluster_label_2 - 1):
-#                 if len(matrix_M[row][col]) > 0:
-#                     matrix_M[row][col].extend(matrix_M[row][max_cluster_label_2 - 1])
-#     return matrix_M
-
-
-def compute_ending_clusters(smaller_matrix_M, max_cluster_label_2, minPts):
+def compute_ending_clusters(smaller_matrix_M, max_cluster_label_2):
     for row_num in range(0, len(smaller_matrix_M) - 1):
         row = smaller_matrix_M[row_num]
-        for col_num in range(0, len(row) - 1):
-       #     amount_of_points = len(smaller_matrix_M[row_num][col_num])
+        for col_num in range(0, len(row)):
             for point in smaller_matrix_M[row_num][col_num]:
-        #        if amount_of_points >= minPts:
                     point.label[2] = row_num
-        #        else:
-        #            point.label[2] = -1
     for point in smaller_matrix_M[len(smaller_matrix_M) - 1][max_cluster_label_2 - 1]:
         point.label[2] = -1
 
@@ -261,8 +214,7 @@ def algorythm_swdbscan(minPts, eps, data):
     max_cluster_label_2 = max_cluster_label_2 + 1
     matrix_M = get_matrix_M(max_cluster_label_1, max_cluster_label_2, dataBase)
     smaller_matrix_M = concatenate_rows(matrix_M, max_cluster_label_1, max_cluster_label_2, minPts)
-    #smaller_matrix_M = concatenate_cols(smaller_matrix_M_1, max_cluster_label_1, max_cluster_label_2, minPts)
-    compute_ending_clusters(smaller_matrix_M, max_cluster_label_2, minPts)
+    compute_ending_clusters(smaller_matrix_M, max_cluster_label_2)
     for p in dataBase:
         if p.label[2] == "UNDEFINED":
             p.label[2] = -1
@@ -284,9 +236,13 @@ def print_hi(name):
                                     [18, 18], [19, 20], [21, 19], [15,  5], [0,  9], [1, 4], [19, 18],
                                     [20, 17], [18, 19], [10, 16], [24,  0]])
 
+    X_3 = np.array([[22, 0], [23, 1], [24, 2], [1, 7], [2, 6], [3, 9], [3, 7], [20, 19],
+                    [18, 18], [19, 20], [21, 19], [-2, -2], [0, 9], [1, 4], [19, 18],
+                    [20, 17], [18, 19], [10, 16], [24, 0]])
+
     #dataArray22 = dataArray2.reshape(1, -1)
     #algorythm_swdbscan(3, 4, dataArray)
-    data_to_print = algorythm_swdbscan(4, 4, X_1)
+    data_to_print = algorythm_swdbscan(4, 4, X_3)
     print_labels(data_to_print)
     a = int(math.pow(90, 1/4))
     print(f'a: {a}')
