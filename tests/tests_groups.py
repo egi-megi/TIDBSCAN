@@ -17,8 +17,8 @@ class GroupsTestCase(unittest.TestCase):
         self.label_number = 0
 
     def test_groups_0(self):
-        #self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray1, self.label_number)
-        self.data_with_labels = algorythm_dbscan(self.minPts, self.eps, self.dataArray1, self.label_number)
+        self.data_with_labels = algorythm_tidbscan(self.minPts, self.eps, self.dataArray1, self.label_number)
+        #self.data_with_labels = algorythm_dbscan(self.minPts, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
             self.labels.append(point.label[0])
@@ -26,24 +26,24 @@ class GroupsTestCase(unittest.TestCase):
         self.assertTrue((self.labels == [-1, 0, 1, 2, 2, 2, 1, 0, 1, 0, 0, -1]))
 
     def test_groups_minPts_4(self):
-        #self.data_with_labels = algorythm_tidbscan(4, self.eps, self.dataArray1, self.label_number)
-        self.data_with_labels = algorythm_dbscan(4, self.eps, self.dataArray1, self.label_number)
+        self.data_with_labels = algorythm_tidbscan(4, self.eps, self.dataArray1, self.label_number)
+        #self.data_with_labels = algorythm_dbscan(4, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
             self.labels.append(point.label[0])
         self.assertTrue((self.labels == [-1, 0, -1, -1, -1, -1, -1, 0, -1, 0, 0, -1]))
 
     def test_groups_minPts_2(self):
-        #self.data_with_labels = algorythm_tidbscan(2, self.eps, self.dataArray1, self.label_number)
-        self.data_with_labels = algorythm_dbscan(2, self.eps, self.dataArray1, self.label_number)
+        self.data_with_labels = algorythm_tidbscan(2, self.eps, self.dataArray1, self.label_number)
+        #self.data_with_labels = algorythm_dbscan(2, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
             self.labels.append(point.label[0])
         self.assertTrue((self.labels == [-1, 0, 1, 2, 2, 2, 1, 0, 1, 0, 0, -1]))
 
     def test_groups_noise(self):
-        #self.data_with_labels = algorythm_tidbscan(5, self.eps, self.dataArray1, self.label_number)
-        self.data_with_labels = algorythm_dbscan(5, self.eps, self.dataArray1, self.label_number)
+        self.data_with_labels = algorythm_tidbscan(5, self.eps, self.dataArray1, self.label_number)
+        #self.data_with_labels = algorythm_dbscan(5, self.eps, self.dataArray1, self.label_number)
         self.labels = []
         for point in self.data_with_labels:
             self.labels.append(point.label[0])
